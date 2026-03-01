@@ -1,0 +1,235 @@
+// ── Config ──────────────────────────────────────────────────────────────────
+const PAGE_SIZE = 40;
+const DDV = "16.4.1"; // Data Dragon version for images
+const IMG_BASE = `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/`;
+
+// ── State ────────────────────────────────────────────────────────────────────
+let filtered = [];
+let page = 0;
+let activeTier = "all";
+let activeChampion = "all";
+let activeSkinLine = "all";
+let activeYear = "all";
+let activeAvail = "all";
+let sortBy = "newest";
+let searchQuery = "";
+
+// ── DOM refs ─────────────────────────────────────────────────────────────────
+const grid         = document.getElementById("skinsGrid");
+const loadMoreWrap = document.getElementById("loadMore");
+const loadMoreBtn  = document.getElementById("loadMoreBtn");
+const noResults    = document.getElementById("noResults");
+const resultsCount = document.getElementById("resultsCount");
+const totalSkinsEl = document.getElementById("totalSkins");
+const totalChampEl = document.getElementById("totalChampions");
+const searchInput  = document.getElementById("searchInput");
+const clearSearch  = document.getElementById("clearSearch");
+const overlay      = document.getElementById("modalOverlay");
+const modalBody    = document.getElementById("modalBody");
+const modalClose   = document.getElementById("modalClose");
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function tierColor(tier) {
+  const map = { Ultimate:"--ultimate", Mythic:"--mythic", Legendary:"--legendary", Epic:"--epic", Standard:"--standard", Budget:"--budget", Rare:"--rare" };
+  return map[tier] || "--text";
+}
+
+function rpLabel(skin) {
+  if (skin.rp === 0) return skin.availability === "Rare" ? "Gem / Prestige / Event" : "0 RP";
+  return `${skin.rp.toLocaleString()} RP`;
+}
+
+function imgUrl(skin) {
+  return `${IMG_BASE}${skin.champion}_${skin.splashIndex || 0}.jpg`;
+}
+
+function yearOf(skin) {
+  return skin.releaseDate ? skin.releaseDate.slice(0, 4) : "?";
+}
+
+// ── Populate dropdowns ───────────────────────────────────────────────────────
+function populateDropdowns() {
+  const champions = [...new Set(window.SKINS.map(s => s.champion))].sort();
+  const skinLines = [...new Set(window.SKINS.map(s => s.skinLine))].sort();
+  const years     = [...new Set(window.SKINS.map(s => yearOf(s)))].sort().reverse();
+
+  const champSel = document.getElementById("championFilter");
+  champions.forEach(c => champSel.insertAdjacentHTML("beforeend", `<option value="${c}">${c}</option>`));
+
+  const lineSel = document.getElementById("skinLineFilter");
+  skinLines.forEach(l => lineSel.insertAdjacentHTML("beforeend", `<option value="${l}">${l}</option>`));
+
+  const yearSel = document.getElementById("yearFilter");
+  years.forEach(y => yearSel.insertAdjacentHTML("beforeend", `<option value="${y}">${y}</option>`));
+
+  const unique = new Set(window.SKINS.map(s => s.champion));
+  totalSkinsEl.textContent = window.SKINS.length;
+  totalChampEl.textContent = unique.size;
+}
+
+// ── Filter + Sort ────────────────────────────────────────────────────────────
+function applyFilters() {
+  const q = searchQuery.toLowerCase();
+  filtered = window.SKINS.filter(s => {
+    if (activeTier !== "all" && s.tier !== activeTier) return false;
+    if (activeChampion !== "all" && s.champion !== activeChampion) return false;
+    if (activeSkinLine !== "all" && s.skinLine !== activeSkinLine) return false;
+    if (activeYear !== "all" && yearOf(s) !== activeYear) return false;
+    if (activeAvail !== "all" && s.availability !== activeAvail) return false;
+    if (q && !s.name.toLowerCase().includes(q) && !s.champion.toLowerCase().includes(q) && !s.skinLine.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    switch (sortBy) {
+      case "newest":     return b.releaseDate.localeCompare(a.releaseDate);
+      case "oldest":     return a.releaseDate.localeCompare(b.releaseDate);
+      case "name-az":    return a.name.localeCompare(b.name);
+      case "name-za":    return b.name.localeCompare(a.name);
+      case "price-high": return b.rp - a.rp;
+      case "price-low":  return a.rp - b.rp;
+      case "champion-az":return a.champion.localeCompare(b.champion);
+      default:           return 0;
+    }
+  });
+
+  page = 0;
+  grid.innerHTML = "";
+  renderPage();
+  resultsCount.textContent = `${filtered.length} skin${filtered.length !== 1 ? "s" : ""} found`;
+  noResults.style.display = filtered.length === 0 ? "block" : "none";
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function renderPage() {
+  const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  slice.forEach(skin => {
+    const card = document.createElement("div");
+    card.className = `skin-card tier-card-${skin.tier}`;
+    card.dataset.id = skin.id;
+    card.innerHTML = `
+      <img class="card-image" src="${imgUrl(skin)}" alt="${skin.name}" loading="lazy"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="card-image-placeholder" style="display:none;">⚔</div>
+      <div class="card-overlay">
+        <div class="card-bottom">
+          <div class="card-name">${skin.name}</div>
+          <span class="tier-badge tier-${skin.tier}">${skin.tier}</span>
+          <div class="card-footer">
+            <span class="card-rp">${rpLabel(skin)}</span>
+            <span class="card-avail avail-${skin.availability}">${skin.availability}</span>
+          </div>
+        </div>
+      </div>`;
+    card.addEventListener("click", () => openModal(skin));
+    grid.appendChild(card);
+  });
+
+  page++;
+  const hasMore = page * PAGE_SIZE < filtered.length;
+  loadMoreWrap.style.display = hasMore ? "block" : "none";
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+function openModal(skin) {
+  const imgHtml = `<img class="modal-img" src="${imgUrl(skin)}" alt="${skin.name}"
+    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+    <div class="modal-img-placeholder" style="display:none;">🎮</div>`;
+
+  modalBody.innerHTML = `
+    ${imgHtml}
+    <div class="modal-info">
+      <div class="modal-header">
+        <div class="modal-name">${skin.name}</div>
+        <div class="modal-champion">${skin.champion}</div>
+      </div>
+      <div class="modal-stats">
+        <div class="stat-block">
+          <div class="stat-label">Tier</div>
+          <div class="stat-value"><span class="tier-badge tier-${skin.tier}">${skin.tier}</span></div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">Cost</div>
+          <div class="stat-value gold">${rpLabel(skin)}</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">Released</div>
+          <div class="stat-value">${skin.releaseDate || "Unknown"}</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">Availability</div>
+          <div class="stat-value"><span class="card-avail avail-${skin.availability}">${skin.availability}</span></div>
+        </div>
+        <div class="stat-block" style="grid-column:1/-1">
+          <div class="stat-label">Skin Line</div>
+          <div class="stat-value">${skin.skinLine}</div>
+        </div>
+      </div>
+      ${skin.lore ? `<div class="modal-lore">${skin.lore}</div>` : ""}
+      ${skin.features && skin.features.length ? `
+        <div class="modal-features">
+          <h4>Features</h4>
+          <div class="feature-list">${skin.features.map(f => `<span class="feature-tag">${f}</span>`).join("")}</div>
+        </div>` : ""}
+    </div>`;
+
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// ── Event Listeners ──────────────────────────────────────────────────────────
+document.getElementById("tierFilters").addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  document.querySelectorAll("#tierFilters .chip").forEach(c => c.classList.remove("active"));
+  chip.classList.add("active");
+  activeTier = chip.dataset.value;
+  applyFilters();
+});
+
+document.getElementById("championFilter").addEventListener("change", e => { activeChampion = e.target.value; applyFilters(); });
+document.getElementById("skinLineFilter").addEventListener("change", e => { activeSkinLine = e.target.value; applyFilters(); });
+document.getElementById("yearFilter").addEventListener("change", e => { activeYear = e.target.value; applyFilters(); });
+document.getElementById("availabilityFilter").addEventListener("change", e => { activeAvail = e.target.value; applyFilters(); });
+document.getElementById("sortBy").addEventListener("change", e => { sortBy = e.target.value; applyFilters(); });
+
+searchInput.addEventListener("input", e => {
+  searchQuery = e.target.value;
+  clearSearch.style.display = searchQuery ? "block" : "none";
+  applyFilters();
+});
+clearSearch.addEventListener("click", () => {
+  searchInput.value = "";
+  searchQuery = "";
+  clearSearch.style.display = "none";
+  applyFilters();
+});
+
+document.getElementById("resetFilters").addEventListener("click", () => {
+  activeTier = activeChampion = activeSkinLine = activeYear = activeAvail = "all";
+  sortBy = "newest";
+  searchQuery = "";
+  searchInput.value = "";
+  clearSearch.style.display = "none";
+  document.querySelectorAll("#tierFilters .chip").forEach((c, i) => c.classList.toggle("active", i === 0));
+  document.getElementById("championFilter").value = "all";
+  document.getElementById("skinLineFilter").value = "all";
+  document.getElementById("yearFilter").value = "all";
+  document.getElementById("availabilityFilter").value = "all";
+  document.getElementById("sortBy").value = "newest";
+  applyFilters();
+});
+
+loadMoreBtn.addEventListener("click", renderPage);
+modalClose.addEventListener("click", closeModal);
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+populateDropdowns();
+applyFilters();

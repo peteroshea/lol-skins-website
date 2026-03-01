@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoL Skin Vault — League of Legends Skins Database</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 110 70" width="48" height="30">
+                    <path fill="#C8A84B" d="M58.0046 10.581C69.8377 12.1048 79 22.4794 79 35.0508C79 39.6096 77.7882 43.8762 75.6862 47.5461H74.6971H69.3431C70.5796 46.0477 71.5811 44.3842 72.3354 42.5683C73.3122 40.1937 73.8068 37.654 73.8068 35.0508C73.8068 32.435 73.3122 29.908 72.3354 27.5334C71.3833 25.235 70.0355 23.1651 68.3045 21.3873C66.5734 19.6096 64.558 18.2127 62.3199 17.2477C60.9351 16.6381 59.4884 16.2191 58.0046 15.9778V10.581ZM39.6924 54.035V46.2762C38.8887 45.1207 38.2087 43.8762 37.6646 42.5683C36.6878 40.1937 36.1932 37.654 36.1932 35.0508C36.1932 32.435 36.6878 29.908 37.6646 27.5334C38.2087 26.2127 38.8887 24.9683 39.6924 23.8254V16.054C34.3756 20.5746 31 27.4064 31 35.0508C31 42.6953 34.3756 49.5143 39.6924 54.035ZM54.4189 8.33337H40.6569L43.2906 13.8572V56.2064L40.694 61.6667H71.8779L74.7218 51.2286H54.4189V8.33337Z"/>
+                </svg>
+                <div>
+                    <h1>LoL Skin Vault</h1>
+                    <span class="logo-sub">League of Legends Skins Database</span>
+                </div>
+            </div>
+            <nav class="nav-stats" id="navStats">
+                <div class="stat-pill"><span id="totalSkins">0</span> Skins</div>
+                <div class="stat-pill"><span id="totalChampions">0</span> Champions</div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Search -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Explore Every Skin in League of Legends</h2>
+            <p>Browse, filter, and discover skins with release dates, RP costs, rarity tiers, and more.</p>
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="text" id="searchInput" placeholder="Search skins, champions, or skin lines..." autocomplete="off">
+                <button id="clearSearch" class="clear-btn" style="display:none;">✕</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+        <div class="filters-container">
+            <div class="filter-group">
+                <label>Tier</label>
+                <div class="filter-chips" id="tierFilters">
+                    <button class="chip active" data-value="all">All</button>
+                    <button class="chip ultimate" data-value="Ultimate">Ultimate</button>
+                    <button class="chip mythic" data-value="Mythic">Mythic</button>
+                    <button class="chip legendary" data-value="Legendary">Legendary</button>
+                    <button class="chip epic" data-value="Epic">Epic</button>
+                    <button class="chip standard" data-value="Standard">Standard</button>
+                    <button class="chip budget" data-value="Budget">Budget</button>
+                    <button class="chip rare" data-value="Rare">Rare</button>
+                    <button class="chip exalted" data-value="Exalted">Exalted</button>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Champion</label>
+                    <select id="championFilter">
+                        <option value="all">All Champions</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Skin Line</label>
+                    <select id="skinLineFilter">
+                        <option value="all">All Skin Lines</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Year</label>
+                    <select id="yearFilter">
+                        <option value="all">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Availability</label>
+                    <select id="availabilityFilter">
+                        <option value="all">All</option>
+                        <option value="Available">Available</option>
+                        <option value="Legacy">Legacy</option>
+                        <option value="Limited">Limited</option>
+                        <option value="Rare">Rare</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Sort By</label>
+                    <select id="sortBy">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name-az">Name A-Z</option>
+                        <option value="name-za">Name Z-A</option>
+                        <option value="price-high">Price High → Low</option>
+                        <option value="price-low">Price Low → High</option>
+                        <option value="champion-az">Champion A-Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="results-bar">
+            <span id="resultsCount">Loading skins...</span>
+            <button id="resetFilters" class="reset-btn">Reset All Filters</button>
+        </div>
+    </section>
+
+    <!-- Skins Grid -->
+    <main class="main-content">
+        <div class="skins-grid" id="skinsGrid"></div>
+        <div id="loadMore" class="load-more" style="display:none;">
+            <button id="loadMoreBtn">Load More Skins</button>
+        </div>
+        <div id="noResults" class="no-results" style="display:none;">
+            <svg viewBox="0 0 64 64" width="64" height="64"><circle cx="32" cy="32" r="28" fill="none" stroke="#555" stroke-width="2"/><line x1="20" y1="24" x2="26" y2="24" stroke="#555" stroke-width="2" stroke-linecap="round"/><line x1="38" y1="24" x2="44" y2="24" stroke="#555" stroke-width="2" stroke-linecap="round"/><path d="M22,42 Q32,34 42,42" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round"/></svg>
+            <h3>No skins found</h3>
+            <p>Try adjusting your filters or search query.</p>
+        </div>
+    </main>
+
+    <!-- Skin Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="skinModal">
+            <button class="modal-close" id="modalClose">✕</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>LoL Skin Vault is a fan-made project. League of Legends and all related assets are property of Riot Games, Inc.</p>
+        <p>Skin splash images sourced from Riot's Data Dragon CDN. Data is community-sourced.</p>
+    </footer>
+
+    <script src="skins-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
