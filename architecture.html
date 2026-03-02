@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LoL Skin Vault — Architecture Diagram</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <title>LoL Skin Vault — Architecture</title>
   <style>
+    @font-face {
+      font-family: 'Beaufort for LOL';
+      src: url('fonts/beaufort/BeaufortForLoL-TTF/BeaufortforLOL-Bold.ttf') format('truetype');
+      font-weight: 700;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -22,682 +27,514 @@
       --border:      #18203C;
       --border-mid:  #232D52;
 
-      --python:   #3B7DD8;
-      --js:       #C8A84B;
-      --html:     #E05C3A;
-      --css:      #7A44E8;
-      --data:     #00C87A;
-      --api:      #AA44FF;
-      --browser:  #2196F3;
+      --c-api:     #AA44FF;
+      --c-python:  #3B7DD8;
+      --c-git:     #F05033;
+      --c-pages:   #2DA44E;
+      --c-browser: #2196F3;
+      --c-cdn:     #C8A84B;
+      --c-files:   #00C87A;
     }
 
     html, body {
       background: var(--bg);
       color: var(--text-mid);
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Spiegel', 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
-      padding: 48px 32px 80px;
+      padding: 48px 24px 80px;
     }
 
-    /* ── Page Header ── */
+    /* ── Header ── */
     .page-header {
       text-align: center;
-      margin-bottom: 56px;
+      margin-bottom: 52px;
     }
     .page-header h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 28px; font-weight: 700;
+      font-family: 'Beaufort for LOL', serif;
+      font-size: 26px; font-weight: 700;
       color: var(--gold-light);
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
     }
     .page-header p {
-      font-size: 14px; color: var(--text-mid);
-      letter-spacing: 0.04em;
+      font-size: 13px; color: var(--text-mid);
     }
     .gold-rule {
-      width: 120px; height: 1px;
+      width: 100px; height: 1px;
       background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-      margin: 16px auto 0;
+      margin: 14px auto 0;
     }
 
-    /* ── Diagram wrapper ── */
+    /* ── Layout ── */
     .diagram {
-      max-width: 1100px;
+      max-width: 1060px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 0;
     }
 
-    /* ── Section labels ── */
-    .section-label {
-      font-family: 'Cinzel', serif;
-      font-size: 9px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.2em;
-      color: var(--text);
-      margin-bottom: 12px;
-      padding-left: 4px;
+    /* ── Section header ── */
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin: 36px 0 16px;
+    }
+    .section-head .line { flex: 1; height: 1px; background: var(--border); }
+    .section-head .label {
+      font-family: 'Beaufort for LOL', serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--text); white-space: nowrap;
     }
 
-    /* ── Row layout ── */
-    .row {
-      display: flex;
-      gap: 16px;
-      align-items: stretch;
-    }
+    /* ── Row ── */
+    .row { display: flex; gap: 12px; align-items: stretch; }
     .row.center { justify-content: center; }
-    .row.spread { justify-content: space-between; }
 
-    /* ── Connector arrows (vertical) ── */
-    .connector-v {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 6px 0;
-      gap: 2px;
+    /* ── Vertical connector ── */
+    .arrow-down {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 4px 0; gap: 0;
     }
-    .connector-v .line {
-      width: 1px; flex: 1;
-      background: linear-gradient(180deg, var(--border-mid), var(--border-mid));
-      min-height: 24px;
+    .arrow-down .shaft {
+      width: 1px; background: var(--border-mid);
+      flex: 1; min-height: 22px;
     }
-    .connector-v .arrow {
+    .arrow-down .head {
       width: 0; height: 0;
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
       border-top: 7px solid var(--border-mid);
     }
-    .connector-v .label {
-      font-family: 'Fira Code', monospace;
+    .arrow-down .tag {
       font-size: 9px; color: var(--text);
-      background: var(--bg); padding: 2px 6px;
+      background: var(--bg); padding: 1px 7px;
       border-radius: 3px; white-space: nowrap;
+      margin: 3px 0;
+      font-family: 'Courier New', monospace;
     }
-    .connector-v.gold .line  { background: var(--gold-dim); }
-    .connector-v.gold .arrow { border-top-color: var(--gold-dim); }
-    .connector-v.gold .label { color: var(--gold); }
+    .arrow-down.gold .shaft { background: var(--gold-dim); }
+    .arrow-down.gold .head  { border-top-color: var(--gold-dim); }
+    .arrow-down.gold .tag   { color: var(--gold); }
 
-    /* ── Connector row (horizontal multi-source to one) ── */
-    .funnel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-    }
-    .funnel-lines {
-      display: flex;
-      width: 100%;
-      position: relative;
-      height: 40px;
-    }
-    .funnel-lines::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 15%; right: 15%;
-      height: 1px;
-      background: var(--border-mid);
-    }
-    .funnel-drop-l, .funnel-drop-c, .funnel-drop-r {
-      position: absolute;
-      top: 0;
-      width: 1px;
-      background: var(--border-mid);
-    }
-    .funnel-drop-l { left: 15%; height: 40px; }
-    .funnel-drop-c { left: 50%; height: 40px; }
-    .funnel-drop-r { right: 15%; height: 40px; }
-    .funnel-arrow {
-      width: 0; height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 7px solid var(--border-mid);
-      margin-top: -1px;
-    }
-
-    /* ── Base node ── */
+    /* ── Node ── */
     .node {
       background: var(--bg3);
       border: 1px solid var(--border-mid);
       border-radius: 10px;
-      padding: 16px 18px;
-      position: relative;
+      padding: 14px 16px;
       flex: 1;
+      position: relative;
     }
-    .node-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .node-top {
+      display: flex; align-items: center; gap: 10px;
       margin-bottom: 10px;
     }
     .node-icon {
-      width: 30px; height: 30px;
-      border-radius: 6px;
+      width: 32px; height: 32px; border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
+      font-size: 16px; flex-shrink: 0;
     }
-    .node-title {
-      font-family: 'Fira Code', monospace;
-      font-size: 13px; font-weight: 500;
-      color: var(--text-bright);
-      line-height: 1.2;
+    .node-name {
+      font-family: 'Courier New', monospace;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-bright); line-height: 1.2;
     }
-    .node-subtitle {
+    .node-sub {
       font-size: 10px; color: var(--text);
-      font-family: 'Nunito', sans-serif;
-      margin-top: 1px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
-    .node-badge {
-      position: absolute;
-      top: 10px; right: 12px;
+    .node-tag {
+      position: absolute; top: 10px; right: 12px;
+      font-family: 'Beaufort for LOL', serif;
       font-size: 8px; font-weight: 700;
-      padding: 2px 7px; border-radius: 3px;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      font-family: 'Cinzel', serif;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 3px;
     }
-    .node-body {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .node-body { display: flex; flex-direction: column; gap: 4px; }
     .detail {
       font-size: 11px; color: var(--text-mid);
       display: flex; align-items: flex-start; gap: 6px;
-      line-height: 1.4;
+      line-height: 1.45;
     }
-    .detail-dot {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--border-mid);
-      flex-shrink: 0;
-      margin-top: 5px;
+    .dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      flex-shrink: 0; margin-top: 5px;
     }
     .detail code {
-      font-family: 'Fira Code', monospace;
+      font-family: 'Courier New', monospace;
       font-size: 10px; color: var(--gold);
       background: rgba(200,168,75,0.08);
-      padding: 0 4px; border-radius: 2px;
+      padding: 0 3px; border-radius: 2px;
     }
 
-    /* ── Node color variants ── */
-    .node.api    { border-color: rgba(170,68,255,0.35); }
-    .node.api    .node-icon { background: rgba(170,68,255,0.15); }
-    .node.api    .node-badge { background: rgba(170,68,255,0.15); color: var(--api); border: 1px solid rgba(170,68,255,0.3); }
-    .node.api    .detail-dot { background: var(--api); }
+    /* colour variants */
+    .api     { border-color: rgba(170,68,255,0.3); }
+    .api     .node-icon { background: rgba(170,68,255,0.12); }
+    .api     .node-tag  { background: rgba(170,68,255,0.12); color: var(--c-api); border: 1px solid rgba(170,68,255,0.3); }
+    .api     .dot       { background: var(--c-api); }
 
-    .node.python { border-color: rgba(59,125,216,0.35); }
-    .node.python .node-icon { background: rgba(59,125,216,0.15); }
-    .node.python .node-badge { background: rgba(59,125,216,0.15); color: var(--python); border: 1px solid rgba(59,125,216,0.3); }
-    .node.python .detail-dot { background: var(--python); }
+    .python  { border-color: rgba(59,125,216,0.3); }
+    .python  .node-icon { background: rgba(59,125,216,0.12); }
+    .python  .node-tag  { background: rgba(59,125,216,0.12); color: var(--c-python); border: 1px solid rgba(59,125,216,0.3); }
+    .python  .dot       { background: var(--c-python); }
 
-    .node.data   { border-color: rgba(0,200,122,0.35); }
-    .node.data   .node-icon { background: rgba(0,200,122,0.15); }
-    .node.data   .node-badge { background: rgba(0,200,122,0.15); color: var(--data); border: 1px solid rgba(0,200,122,0.3); }
-    .node.data   .detail-dot { background: var(--data); }
+    .files   { border-color: rgba(0,200,122,0.3); }
+    .files   .node-icon { background: rgba(0,200,122,0.12); }
+    .files   .node-tag  { background: rgba(0,200,122,0.12); color: var(--c-files); border: 1px solid rgba(0,200,122,0.3); }
+    .files   .dot       { background: var(--c-files); }
 
-    .node.html   { border-color: rgba(224,92,58,0.35); }
-    .node.html   .node-icon { background: rgba(224,92,58,0.15); }
-    .node.html   .node-badge { background: rgba(224,92,58,0.15); color: var(--html); border: 1px solid rgba(224,92,58,0.3); }
-    .node.html   .detail-dot { background: var(--html); }
+    .git     { border-color: rgba(240,80,51,0.3); }
+    .git     .node-icon { background: rgba(240,80,51,0.12); }
+    .git     .node-tag  { background: rgba(240,80,51,0.12); color: var(--c-git); border: 1px solid rgba(240,80,51,0.3); }
+    .git     .dot       { background: var(--c-git); }
 
-    .node.css    { border-color: rgba(122,68,232,0.35); }
-    .node.css    .node-icon { background: rgba(122,68,232,0.15); }
-    .node.css    .node-badge { background: rgba(122,68,232,0.15); color: var(--css); border: 1px solid rgba(122,68,232,0.3); }
-    .node.css    .detail-dot { background: var(--css); }
+    .pages   { border-color: rgba(45,164,78,0.3); }
+    .pages   .node-icon { background: rgba(45,164,78,0.12); }
+    .pages   .node-tag  { background: rgba(45,164,78,0.12); color: var(--c-pages); border: 1px solid rgba(45,164,78,0.3); }
+    .pages   .dot       { background: var(--c-pages); }
 
-    .node.js     { border-color: rgba(200,168,75,0.35); }
-    .node.js     .node-icon { background: rgba(200,168,75,0.12); }
-    .node.js     .node-badge { background: rgba(200,168,75,0.12); color: var(--gold); border: 1px solid rgba(200,168,75,0.3); }
-    .node.js     .detail-dot { background: var(--gold); }
+    .browser { border-color: rgba(33,150,243,0.3); }
+    .browser .node-icon { background: rgba(33,150,243,0.12); }
+    .browser .node-tag  { background: rgba(33,150,243,0.12); color: var(--c-browser); border: 1px solid rgba(33,150,243,0.3); }
+    .browser .dot       { background: var(--c-browser); }
 
-    .node.browser { border-color: rgba(33,150,243,0.35); }
-    .node.browser .node-icon { background: rgba(33,150,243,0.15); }
-    .node.browser .node-badge { background: rgba(33,150,243,0.15); color: var(--browser); border: 1px solid rgba(33,150,243,0.3); }
-    .node.browser .detail-dot { background: var(--browser); }
+    .cdn     { border-color: rgba(200,168,75,0.3); }
+    .cdn     .node-icon { background: rgba(200,168,75,0.1); }
+    .cdn     .node-tag  { background: rgba(200,168,75,0.1); color: var(--gold); border: 1px solid rgba(200,168,75,0.3); }
+    .cdn     .dot       { background: var(--gold); }
 
-    /* ── Wide node (full row) ── */
-    .node.wide { flex: none; width: 100%; }
-    .node.wide .node-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-    /* ── Sub-node (inside browser) ── */
-    .sub-node {
-      background: var(--bg4);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 10px 12px;
+    /* ── Funnel: 3 APIs → 1 script ── */
+    .funnel-wrap { position: relative; height: 44px; margin: 0 8%; }
+    .funnel-wrap .h-line {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: var(--border-mid);
     }
-    .sub-node-title {
-      font-family: 'Fira Code', monospace;
-      font-size: 11px; color: var(--text-bright);
-      margin-bottom: 6px;
+    .funnel-wrap .v { position: absolute; top: 0; width: 1px; background: var(--border-mid); height: 44px; }
+    .funnel-wrap .v1 { left: 16.5%; }
+    .funnel-wrap .v2 { left: 50%; }
+    .funnel-wrap .v3 { right: 16.5%; }
+    .funnel-wrap .arrow-tip {
+      position: absolute; bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 7px solid var(--border-mid);
+    }
+    .funnel-wrap .ftag {
+      position: absolute; bottom: 12px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px; color: var(--text);
+      background: var(--bg); padding: 1px 7px;
+      border-radius: 3px; white-space: nowrap;
+      font-family: 'Courier New', monospace;
     }
 
-    /* ── Data flow row ── */
-    .flow-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+    /* ── GitHub split: repo + pages side by side ── */
+    .gh-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Browser runtime grid ── */
+    .runtime-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .rt-col { display: flex; flex-direction: column; gap: 8px; }
+    .rt-col-label {
+      font-family: 'Beaufort for LOL', serif;
+      font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em;
+      color: var(--text); text-align: center;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border);
     }
-    .flow-arrow {
-      font-size: 11px; color: var(--border-mid);
+    .rt-box {
+      background: var(--bg4); border: 1px solid var(--border);
+      border-radius: 7px; padding: 9px 11px;
     }
-    .flow-item {
-      font-family: 'Fira Code', monospace;
-      font-size: 10px; color: var(--text-mid);
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2px 8px;
+    .rt-title {
+      font-family: 'Courier New', monospace;
+      font-size: 11px; color: var(--text-bright); margin-bottom: 4px;
     }
-    .flow-item.highlight { color: var(--gold); border-color: rgba(200,168,75,0.25); }
+    .rt-title small { font-family: system-ui; font-size: 9px; color: var(--text); margin-left: 4px; }
+    .rt-detail { font-size: 10px; color: var(--text); line-height: 1.5; }
+    .rt-detail code { font-family: 'Courier New', monospace; font-size: 9.5px; color: var(--gold); }
+
+    /* ── Live URL banner ── */
+    .live-banner {
+      margin-top: 48px;
+      background: rgba(45,164,78,0.08);
+      border: 1px solid rgba(45,164,78,0.3);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .live-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--c-pages);
+      box-shadow: 0 0 8px var(--c-pages);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+    .live-label {
+      font-family: 'Beaufort for LOL', serif;
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--c-pages); margin-bottom: 3px;
+    }
+    .live-url {
+      font-family: 'Courier New', monospace;
+      font-size: 13px; color: var(--text-bright);
+    }
+    .live-url a { color: inherit; text-decoration: none; }
+    .live-url a:hover { color: var(--gold); }
 
     /* ── Legend ── */
     .legend {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 48px;
-      padding-top: 24px;
+      display: flex; flex-wrap: wrap; gap: 18px;
+      margin-top: 36px; padding-top: 20px;
       border-top: 1px solid var(--border);
       justify-content: center;
     }
-    .legend-item {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 11px; color: var(--text-mid);
-    }
-    .legend-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ── Section divider ── */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin: 32px 0 20px;
-    }
-    .section-divider .line {
-      flex: 1; height: 1px;
-      background: var(--border);
-    }
-    .section-divider .title {
-      font-family: 'Cinzel', serif;
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    /* ── State chips ── */
-    .chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
-    .chip {
-      font-family: 'Fira Code', monospace;
-      font-size: 9px; padding: 2px 7px; border-radius: 3px;
-      background: var(--bg2); border: 1px solid var(--border);
-      color: var(--text-mid);
-    }
-
-    /* ── Runtime flow diagram ── */
-    .runtime-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-    }
-    .runtime-col {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .runtime-col-label {
-      font-family: 'Cinzel', serif;
-      font-size: 8px; text-transform: uppercase;
-      letter-spacing: 0.18em; color: var(--text);
-      text-align: center; padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
-    .rt-box {
-      background: var(--bg4);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 10px 12px;
-    }
-    .rt-box-title {
-      font-family: 'Fira Code', monospace;
-      font-size: 11px; color: var(--text-bright);
-      margin-bottom: 5px;
-    }
-    .rt-box-title span {
-      font-family: 'Nunito', sans-serif;
-      font-size: 9px; color: var(--text);
-      margin-left: 5px;
-    }
-    .rt-detail {
-      font-size: 10px; color: var(--text);
-      line-height: 1.5;
-    }
-    .rt-detail code {
-      font-family: 'Fira Code', monospace;
-      font-size: 9.5px; color: var(--gold);
-    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-mid); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   </style>
 </head>
 <body>
 
-  <div class="page-header">
-    <h1>LoL Skin Vault — Technical Architecture</h1>
-    <p>Static fan site · 896 skins · Pure HTML / CSS / JavaScript · No backend</p>
-    <div class="gold-rule"></div>
+<div class="page-header">
+  <h1>LoL Skin Vault — Technical Architecture</h1>
+  <p>End-to-end overview · from data sources to live browser</p>
+  <div class="gold-rule"></div>
+</div>
+
+<div class="diagram">
+
+  <!-- ══ 1. DATA SOURCES ══ -->
+  <div class="section-head"><div class="line"></div><div class="label">① External Data Sources</div><div class="line"></div></div>
+
+  <div class="row">
+    <div class="node api">
+      <div class="node-tag">REST API</div>
+      <div class="node-top">
+        <div class="node-icon">🐉</div>
+        <div><div class="node-name">Data Dragon</div><div class="node-sub">ddragon.leagueoflegends.com · v16.4.1</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Champion list + skin names</div>
+        <div class="detail"><div class="dot"></div>Splash image CDN — <code>{champion}_{n}.jpg</code></div>
+      </div>
+    </div>
+
+    <div class="node api">
+      <div class="node-tag">REST API</div>
+      <div class="node-top">
+        <div class="node-icon">🌐</div>
+        <div><div class="node-name">Community Dragon</div><div class="node-sub">raw.communitydragon.org · latest</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Rarity → tier · skin lines · lore</div>
+        <div class="detail"><div class="dot"></div><code>isLegacy</code> flag → availability</div>
+      </div>
+    </div>
+
+    <div class="node api">
+      <div class="node-tag">REST API</div>
+      <div class="node-top">
+        <div class="node-icon">📊</div>
+        <div><div class="node-name">Meraki Analytics</div><div class="node-sub">cdn.merakianalytics.com</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Actual RP costs</div>
+        <div class="detail"><div class="dot"></div>Release dates <code>YYYY-MM-DD</code></div>
+      </div>
+    </div>
   </div>
 
-  <div class="diagram">
-
-    <!-- ══ BUILD PIPELINE ══ -->
-    <div class="section-divider">
-      <div class="line"></div>
-      <div class="title">① Build Pipeline — Run once per patch</div>
-      <div class="line"></div>
-    </div>
-
-    <!-- External APIs -->
-    <div class="section-label">External Data Sources</div>
-    <div class="row spread">
-
-      <div class="node api" style="flex:1">
-        <div class="node-badge">API</div>
-        <div class="node-header">
-          <div class="node-icon">🐉</div>
-          <div>
-            <div class="node-title">Data Dragon</div>
-            <div class="node-subtitle">ddragon.leagueoflegends.com</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span>Champion list (all keys)</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Per-champion skin names + <code>splashIndex</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Splash image CDN at <code>loading/{key}_{n}.jpg</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Versioned: <code>v16.4.1</code></span></div>
-        </div>
-      </div>
-
-      <div class="node api" style="flex:1">
-        <div class="node-badge">API</div>
-        <div class="node-header">
-          <div class="node-icon">🌐</div>
-          <div>
-            <div class="node-title">Community Dragon</div>
-            <div class="node-subtitle">raw.communitydragon.org</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span>Full skin metadata — <code>skins.json</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Rarity → tier mapping (<code>kUltimate</code>, <code>kEpic</code>…)</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Skin line IDs + lore descriptions</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>isLegacy</code> flag → availability</span></div>
-        </div>
-      </div>
-
-      <div class="node api" style="flex:1">
-        <div class="node-badge">API</div>
-        <div class="node-header">
-          <div class="node-icon">📊</div>
-          <div>
-            <div class="node-title">Meraki Analytics</div>
-            <div class="node-subtitle">cdn.merakianalytics.com</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span>Actual RP costs (community-maintained)</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Skin release dates (<code>YYYY-MM-DD</code>)</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Fallback: tier-default RP if missing</span></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Funnel arrows → generate_skins.py -->
-    <div style="position:relative; height:48px; margin: 0 10%;">
-      <div style="position:absolute; top:0; left:0; right:0; height:1px; background:var(--border-mid);"></div>
-      <div style="position:absolute; top:0; left:16.5%; width:1px; height:48px; background:var(--border-mid);"></div>
-      <div style="position:absolute; top:0; left:50%;  width:1px; height:48px; background:var(--border-mid);"></div>
-      <div style="position:absolute; top:0; right:16.5%; width:1px; height:48px; background:var(--border-mid);"></div>
-      <!-- arrow head center -->
-      <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:7px solid var(--border-mid);"></div>
-      <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); font-family:'Fira Code',monospace; font-size:9px; color:var(--text); background:var(--bg); padding:1px 6px; border-radius:3px; white-space:nowrap;">HTTP fetch via urllib · ~170 requests · 0.05s delay</div>
-    </div>
-
-    <!-- generate_skins.py -->
-    <div class="section-label">Build Script</div>
-    <div class="row center">
-      <div class="node python" style="max-width:640px; width:100%;">
-        <div class="node-badge">Python 3</div>
-        <div class="node-header">
-          <div class="node-icon">🐍</div>
-          <div>
-            <div class="node-title">generate_skins.py</div>
-            <div class="node-subtitle">Run manually after each LoL patch to refresh data</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span>Fetches all 3 sources sequentially using <code>urllib</code> (no dependencies)</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Merges data by skin ID — resolves tier, RP, availability, lore, skin line</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Tier refinement: <code>kNoRarity</code> + RP ≤ 520 → <code>Budget</code> tier</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Availability logic: <code>isLegacy</code> → Legacy · <code>kRare</code> → Rare · Prestige → Limited</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Outputs <code>skins-data.js</code> with <code>window.SKINS = [...]</code> global array</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Arrow down to skins-data.js -->
-    <div class="connector-v gold" style="height:48px;">
-      <div class="line"></div>
-      <div class="label">writes → overwrites</div>
-      <div class="line"></div>
-      <div class="arrow"></div>
-    </div>
-
-    <!-- skins-data.js -->
-    <div class="section-label">Generated Static File</div>
-    <div class="row center">
-      <div class="node data" style="max-width:640px; width:100%;">
-        <div class="node-badge">JS · ~720 KB</div>
-        <div class="node-header">
-          <div class="node-icon">📦</div>
-          <div>
-            <div class="node-title">skins-data.js</div>
-            <div class="node-subtitle">Static data file — committed to repo, served directly</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span><code>window.SKINS</code> — array of <strong style="color:var(--data)">896 skin objects</strong></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Fields per entry: <code>id</code> · <code>name</code> · <code>champion</code> · <code>tier</code> · <code>rp</code> · <code>releaseDate</code> · <code>skinLine</code> · <code>availability</code> · <code>lore</code> · <code>splashIndex</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>No server required — loaded as a plain <code>&lt;script&gt;</code> tag in the browser</span></div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ══ BROWSER RUNTIME ══ -->
-    <div class="section-divider" style="margin-top:48px;">
-      <div class="line"></div>
-      <div class="title">② Browser Runtime — Static file serving, no backend</div>
-      <div class="line"></div>
-    </div>
-
-    <!-- The 4 files -->
-    <div class="section-label">Source Files</div>
-    <div class="row spread">
-
-      <div class="node html" style="flex:1.2">
-        <div class="node-badge">HTML5</div>
-        <div class="node-header">
-          <div class="node-icon">🏗</div>
-          <div>
-            <div class="node-title">index.html</div>
-            <div class="node-subtitle">Document structure + script loading</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span><code>&lt;header&gt;</code> — sticky nav with live stats</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>&lt;section.hero&gt;</code> — search input</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>&lt;section.filters-section&gt;</code> — sticky filters</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>&lt;main&gt;</code> — card grid + load-more</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>&lt;div.modal-overlay&gt;</code> — skin detail modal</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Loads: <code>styles.css</code> → <code>skins-data.js</code> → <code>app.js</code></span></div>
-        </div>
-      </div>
-
-      <div class="node css" style="flex:1">
-        <div class="node-badge">CSS3</div>
-        <div class="node-header">
-          <div class="node-icon">🎨</div>
-          <div>
-            <div class="node-title">styles.css</div>
-            <div class="node-subtitle">All visual design</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span>Fonts: <code>Cinzel</code> + <code>Nunito</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>CSS custom properties for theme</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Full-bleed card overlay design</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Tier-specific glow <code>--card-glow</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Animated hero grid <code>@keyframes</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span>Shimmer sweep on card hover</span></div>
-        </div>
-      </div>
-
-      <div class="node js" style="flex:1.2">
-        <div class="node-badge">Vanilla JS</div>
-        <div class="node-header">
-          <div class="node-icon">⚙️</div>
-          <div>
-            <div class="node-title">app.js</div>
-            <div class="node-subtitle">All runtime logic — no frameworks</div>
-          </div>
-        </div>
-        <div class="node-body">
-          <div class="detail"><div class="detail-dot"></div><span><code>populateDropdowns()</code> — builds champion, skin line, year selects from <code>window.SKINS</code></span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>applyFilters()</code> — filters + sorts the array, resets pagination</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>renderPage()</code> — slices 40 items, injects card HTML into grid</span></div>
-          <div class="detail"><div class="detail-dot"></div><span><code>openModal(skin)</code> — renders detail overlay</span></div>
-          <div class="detail"><div class="detail-dot"></div><span>All event listeners: search, chips, selects, load-more, ESC</span></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Runtime flow section -->
-    <div class="section-divider" style="margin-top:36px;">
-      <div class="line"></div>
-      <div class="title">③ Runtime Data Flow</div>
-      <div class="line"></div>
-    </div>
-
-    <div class="node browser wide">
-      <div class="node-badge">Browser</div>
-      <div class="node-header" style="margin-bottom:16px;">
-        <div class="node-icon">🌍</div>
-        <div>
-          <div class="node-title">Runtime Execution Flow</div>
-          <div class="node-subtitle">Everything happens client-side — zero network calls after page load</div>
-        </div>
-      </div>
-
-      <div class="runtime-grid">
-
-        <div class="runtime-col">
-          <div class="runtime-col-label">State</div>
-          <div class="rt-box">
-            <div class="rt-box-title">Global State <span>module-level vars</span></div>
-            <div class="rt-detail">
-              <code>filtered[]</code> — current result set<br>
-              <code>page</code> — pagination cursor<br>
-              <code>activeTier</code> / <code>activeChampion</code><br>
-              <code>activeSkinLine</code> / <code>activeYear</code><br>
-              <code>activeAvail</code> / <code>sortBy</code><br>
-              <code>searchQuery</code>
-            </div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Image URL <span>built at render time</span></div>
-            <div class="rt-detail">
-              <code>IMG_BASE + champion + "_" + splashIndex + ".jpg"</code><br><br>
-              Served from Riot's Data Dragon CDN. <code>onerror</code> fallback shows ⚔ placeholder.
-            </div>
-          </div>
-        </div>
-
-        <div class="runtime-col">
-          <div class="runtime-col-label">User Interactions → State Updates</div>
-          <div class="rt-box">
-            <div class="rt-box-title">Search input</div>
-            <div class="rt-detail">Filters by <code>name</code>, <code>champion</code>, <code>skinLine</code></div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Tier chips</div>
-            <div class="rt-detail">Single-select active chip → <code>activeTier</code></div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Dropdown filters</div>
-            <div class="rt-detail">Champion · Skin Line · Year · Availability → individual state vars</div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Sort select</div>
-            <div class="rt-detail">newest · oldest · name A-Z · price high/low · champion A-Z</div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Load More button</div>
-            <div class="rt-detail">Increments <code>page</code>, renders next 40 cards</div>
-          </div>
-        </div>
-
-        <div class="runtime-col">
-          <div class="runtime-col-label">Render Output</div>
-          <div class="rt-box">
-            <div class="rt-box-title">Card Grid <span>.skins-grid</span></div>
-            <div class="rt-detail">
-              40 cards per page · <code>aspect-ratio: 11/16</code><br>
-              Full-bleed splash art · gradient overlay<br>
-              Tier badge top-left · name + RP bottom<br>
-              Tier-matched glow on hover
-            </div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Modal <span>.modal-overlay</span></div>
-            <div class="rt-detail">
-              Opens on card click · ESC to close<br>
-              Large splash art + stat grid<br>
-              Shows: tier · cost · release date<br>
-              availability · skin line · lore
-            </div>
-          </div>
-          <div class="rt-box">
-            <div class="rt-box-title">Sticky UI</div>
-            <div class="rt-detail">
-              Header: <code>top: 0</code> · z-index 100<br>
-              Filter bar: <code>top: 68px</code> · z-index 90<br>
-              Both use <code>backdrop-filter: blur</code>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Legend -->
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--api)"></div>External API</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--python)"></div>Python build script</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--data)"></div>Generated data file</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--html)"></div>HTML structure</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--css)"></div>CSS styling</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--js)"></div>JavaScript logic</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--browser)"></div>Browser runtime</div>
-    </div>
-
+  <!-- funnel arrows -->
+  <div class="funnel-wrap">
+    <div class="h-line"></div>
+    <div class="v v1"></div>
+    <div class="v v2"></div>
+    <div class="v v3"></div>
+    <div class="ftag">urllib · ~170 requests · run once per patch</div>
+    <div class="arrow-tip"></div>
   </div>
 
+  <!-- ══ 2. BUILD SCRIPT ══ -->
+  <div class="section-head"><div class="line"></div><div class="label">② Build Script — run locally after each patch</div><div class="line"></div></div>
+
+  <div class="row center">
+    <div class="node python" style="max-width:600px;width:100%">
+      <div class="node-tag">Python 3</div>
+      <div class="node-top">
+        <div class="node-icon">🐍</div>
+        <div><div class="node-name">generate_skins.py</div><div class="node-sub">No external dependencies — stdlib only</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Fetches all 3 sources, merges by skin ID</div>
+        <div class="detail"><div class="dot"></div>Resolves tier, RP, availability, lore, skin line per skin</div>
+        <div class="detail"><div class="dot"></div>Writes <code>window.SKINS = [...]</code> to <code>skins-data.js</code> — 896 entries, ~720 KB</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down gold" style="height:48px;margin:0 auto;">
+    <div class="shaft"></div>
+    <div class="tag">writes skins-data.js → git commit → git push</div>
+    <div class="shaft"></div>
+    <div class="head"></div>
+  </div>
+
+  <!-- ══ 3. SOURCE FILES + GIT ══ -->
+  <div class="section-head"><div class="line"></div><div class="label">③ Source Files &amp; Version Control</div><div class="line"></div></div>
+
+  <div class="row">
+    <div class="node files">
+      <div class="node-tag">Static Files</div>
+      <div class="node-top">
+        <div class="node-icon">📁</div>
+        <div><div class="node-name">Project Files</div><div class="node-sub">~/lol-skins-website/</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div><code>index.html</code> — structure &amp; layout</div>
+        <div class="detail"><div class="dot"></div><code>styles.css</code> — Beaufort/Spiegel fonts, card overlays, animations</div>
+        <div class="detail"><div class="dot"></div><code>app.js</code> — filter, sort, render, modal logic</div>
+        <div class="detail"><div class="dot"></div><code>skins-data.js</code> — 896 skin objects (generated)</div>
+        <div class="detail"><div class="dot"></div><code>fonts/</code> — Riot's official Beaufort for LOL &amp; Spiegel TTFs</div>
+      </div>
+    </div>
+
+    <div class="node git">
+      <div class="node-tag">Git / GitHub</div>
+      <div class="node-top">
+        <div class="node-icon">🐙</div>
+        <div><div class="node-name">github.com/peteroshea</div><div class="node-sub">/lol-skins-website · branch: main</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Source of truth for all files</div>
+        <div class="detail"><div class="dot"></div>Push to <code>main</code> triggers auto-deploy</div>
+        <div class="detail"><div class="dot"></div>Full version history of every change</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down" style="height:44px;margin:0 auto;">
+    <div class="shaft"></div>
+    <div class="tag">GitHub Pages auto-deploy on push to main</div>
+    <div class="shaft"></div>
+    <div class="head"></div>
+  </div>
+
+  <!-- ══ 4. HOSTING ══ -->
+  <div class="section-head"><div class="line"></div><div class="label">④ Hosting — GitHub Pages</div><div class="line"></div></div>
+
+  <div class="row center">
+    <div class="node pages" style="max-width:600px;width:100%">
+      <div class="node-tag">CDN · Free</div>
+      <div class="node-top">
+        <div class="node-icon">🚀</div>
+        <div><div class="node-name">GitHub Pages</div><div class="node-sub">peteroshea.github.io/lol-skins-website</div></div>
+      </div>
+      <div class="node-body">
+        <div class="detail"><div class="dot"></div>Serves all static files directly from the Git repo</div>
+        <div class="detail"><div class="dot"></div>Global CDN — no server, no backend, no cost</div>
+        <div class="detail"><div class="dot"></div>HTTPS included · auto-deploys on every push to <code>main</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down" style="height:44px;margin:0 auto;">
+    <div class="shaft"></div>
+    <div class="tag">HTTP · user opens URL in browser</div>
+    <div class="shaft"></div>
+    <div class="head"></div>
+  </div>
+
+  <!-- ══ 5. BROWSER RUNTIME ══ -->
+  <div class="section-head"><div class="line"></div><div class="label">⑤ Browser Runtime — everything client-side</div><div class="line"></div></div>
+
+  <div class="node browser" style="width:100%">
+    <div class="node-tag">Vanilla JS · No Framework</div>
+    <div class="node-top" style="margin-bottom:16px;">
+      <div class="node-icon">🌍</div>
+      <div><div class="node-name">User's Browser</div><div class="node-sub">Zero server calls after initial page load</div></div>
+    </div>
+    <div class="runtime-grid">
+      <div class="rt-col">
+        <div class="rt-col-label">Load order</div>
+        <div class="rt-box">
+          <div class="rt-title">1. styles.css</div>
+          <div class="rt-detail">Fonts, layout, card animations, tier glow variables</div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">2. skins-data.js</div>
+          <div class="rt-detail">Sets <code>window.SKINS</code> — 896 objects in memory</div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">3. app.js</div>
+          <div class="rt-detail">Reads <code>window.SKINS</code>, populates filters, renders first 40 cards</div>
+        </div>
+      </div>
+
+      <div class="rt-col">
+        <div class="rt-col-label">Interactions → re-render</div>
+        <div class="rt-box">
+          <div class="rt-title">Search <small>name · champion · skin line</small></div>
+          <div class="rt-detail">Filters <code>window.SKINS</code> on every keystroke</div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">Tier chips · Dropdowns</div>
+          <div class="rt-detail">Champion · Skin Line · Year · Availability · Sort</div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">Load More</div>
+          <div class="rt-detail">Appends next 40 cards — no network request</div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">Card click → Modal</div>
+          <div class="rt-detail">Renders detail overlay with tier, cost, lore, dates</div>
+        </div>
+      </div>
+
+      <div class="rt-col">
+        <div class="rt-col-label">Runtime CDN call</div>
+        <div class="rt-box" style="border-color:rgba(200,168,75,0.25);">
+          <div class="rt-title" style="color:var(--gold);">Riot Data Dragon CDN</div>
+          <div class="rt-detail">
+            Splash art loaded lazily per card<br><code>ddragon.leagueoflegends.com</code><br><code>/cdn/img/champion/loading/</code><br><code>{champion}_{splashIndex}.jpg</code>
+          </div>
+        </div>
+        <div class="rt-box">
+          <div class="rt-title">No other network calls</div>
+          <div class="rt-detail">All data, fonts, and logic are self-contained in the served files</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LIVE BANNER ══ -->
+  <div class="live-banner">
+    <div class="live-dot"></div>
+    <div>
+      <div class="live-label">Live Site</div>
+      <div class="live-url"><a href="https://peteroshea.github.io/lol-skins-website/" target="_blank">https://peteroshea.github.io/lol-skins-website/</a></div>
+    </div>
+    <div style="margin-left:auto; text-align:right;">
+      <div class="live-label">Source</div>
+      <div class="live-url"><a href="https://github.com/peteroshea/lol-skins-website" target="_blank">github.com/peteroshea/lol-skins-website</a></div>
+    </div>
+  </div>
+
+  <!-- ══ LEGEND ══ -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-api)"></div>External API</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-python)"></div>Python build script</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-files)"></div>Static source files</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-git)"></div>Git / GitHub</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-pages)"></div>GitHub Pages (hosting)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-browser)"></div>Browser runtime</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-cdn)"></div>Riot CDN (images)</div>
+  </div>
+
+</div>
 </body>
 </html>
