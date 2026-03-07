@@ -28,6 +28,11 @@ const overlay      = document.getElementById("modalOverlay");
 const modalBody    = document.getElementById("modalBody");
 const modalClose   = document.getElementById("modalClose");
 
+// ── Analytics ────────────────────────────────────────────────────────────────
+function track(event, params = {}) {
+  if (typeof gtag === "function") gtag("event", event, params);
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function tierColor(tier) {
   const map = { Ultimate:"--ultimate", Mythic:"--mythic", Legendary:"--legendary", Epic:"--epic", Standard:"--standard", Budget:"--budget", Rare:"--rare" };
@@ -173,6 +178,7 @@ function openModal(skin) {
         </div>` : ""}
     </div>`;
 
+  track("skin_view", { skin_name: skin.name, champion: skin.champion, tier: skin.tier, skin_line: skin.skinLine });
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
 }
@@ -189,18 +195,44 @@ document.getElementById("tierFilters").addEventListener("click", e => {
   document.querySelectorAll("#tierFilters .chip").forEach(c => c.classList.remove("active"));
   chip.classList.add("active");
   activeTier = chip.dataset.value;
+  track("filter_tier", { tier: activeTier });
   applyFilters();
 });
 
-document.getElementById("championFilter").addEventListener("change", e => { activeChampion = e.target.value; applyFilters(); });
-document.getElementById("skinLineFilter").addEventListener("change", e => { activeSkinLine = e.target.value; applyFilters(); });
-document.getElementById("yearFilter").addEventListener("change", e => { activeYear = e.target.value; applyFilters(); });
-document.getElementById("availabilityFilter").addEventListener("change", e => { activeAvail = e.target.value; applyFilters(); });
-document.getElementById("sortBy").addEventListener("change", e => { sortBy = e.target.value; applyFilters(); });
+document.getElementById("championFilter").addEventListener("change", e => {
+  activeChampion = e.target.value;
+  if (activeChampion !== "all") track("filter_champion", { champion: activeChampion });
+  applyFilters();
+});
+document.getElementById("skinLineFilter").addEventListener("change", e => {
+  activeSkinLine = e.target.value;
+  if (activeSkinLine !== "all") track("filter_skin_line", { skin_line: activeSkinLine });
+  applyFilters();
+});
+document.getElementById("yearFilter").addEventListener("change", e => {
+  activeYear = e.target.value;
+  if (activeYear !== "all") track("filter_year", { year: activeYear });
+  applyFilters();
+});
+document.getElementById("availabilityFilter").addEventListener("change", e => {
+  activeAvail = e.target.value;
+  if (activeAvail !== "all") track("filter_availability", { availability: activeAvail });
+  applyFilters();
+});
+document.getElementById("sortBy").addEventListener("change", e => {
+  sortBy = e.target.value;
+  track("sort_change", { sort_by: sortBy });
+  applyFilters();
+});
 
+let searchTimer;
 searchInput.addEventListener("input", e => {
   searchQuery = e.target.value;
   clearSearch.style.display = searchQuery ? "block" : "none";
+  clearTimeout(searchTimer);
+  if (searchQuery.length >= 2) {
+    searchTimer = setTimeout(() => track("search", { search_term: searchQuery, results: filtered.length }), 800);
+  }
   applyFilters();
 });
 clearSearch.addEventListener("click", () => {
@@ -222,10 +254,14 @@ document.getElementById("resetFilters").addEventListener("click", () => {
   document.getElementById("yearFilter").value = "all";
   document.getElementById("availabilityFilter").value = "all";
   document.getElementById("sortBy").value = "newest";
+  track("reset_filters");
   applyFilters();
 });
 
-loadMoreBtn.addEventListener("click", renderPage);
+loadMoreBtn.addEventListener("click", () => {
+  track("load_more", { page_loaded: page + 1 });
+  renderPage();
+});
 modalClose.addEventListener("click", closeModal);
 overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
