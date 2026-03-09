@@ -155,7 +155,23 @@
         </div>
         <div class="feedback-popup-body">
             <p class="feedback-hint">Found a bug, missing skin, or have a suggestion? Let me know!</p>
-            <textarea id="feedbackText" placeholder="Your feedback..." rows="4" maxlength="1000"></textarea>
+
+            <div class="feedback-rating-group">
+                <span class="feedback-rating-label">How useful is this site?</span>
+                <div class="feedback-stars" id="feedbackStars">
+                    <button type="button" class="star-btn" data-value="1" title="1 — Not useful">1</button>
+                    <button type="button" class="star-btn" data-value="2" title="2">2</button>
+                    <button type="button" class="star-btn" data-value="3" title="3">3</button>
+                    <button type="button" class="star-btn" data-value="4" title="4">4</button>
+                    <button type="button" class="star-btn" data-value="5" title="5 — Very useful">5</button>
+                </div>
+                <span class="feedback-rating-hint" id="ratingHint">Tap to rate</span>
+            </div>
+
+            <textarea id="feedbackText" placeholder="Your feedback..." rows="3" maxlength="1000"></textarea>
+
+            <input type="email" id="feedbackEmail" class="feedback-email" placeholder="Email (optional)" autocomplete="email">
+
             <div class="feedback-footer">
                 <span class="feedback-char" id="feedbackChar">0 / 1000</span>
                 <button class="feedback-submit" id="feedbackSubmit">Send</button>
@@ -171,18 +187,35 @@
         // ── Replace this with your deployed Google Apps Script URL ──
         var SHEET_URL = 'https://script.google.com/macros/s/AKfycbytdXq5wTtxsSPsN1dePxynmguMz9RawEN45NwYBpccgNoj8dYKOcypDRqct8S8U1n8/exec';
 
-        var fab     = document.getElementById('feedbackFab');
-        var popup   = document.getElementById('feedbackPopup');
-        var closeBtn= document.getElementById('feedbackClose');
-        var textarea= document.getElementById('feedbackText');
-        var charEl  = document.getElementById('feedbackChar');
-        var submitBtn=document.getElementById('feedbackSubmit');
-        var statusEl= document.getElementById('feedbackStatus');
+        var fab       = document.getElementById('feedbackFab');
+        var popup     = document.getElementById('feedbackPopup');
+        var closeBtn  = document.getElementById('feedbackClose');
+        var textarea  = document.getElementById('feedbackText');
+        var emailEl   = document.getElementById('feedbackEmail');
+        var charEl    = document.getElementById('feedbackChar');
+        var submitBtn = document.getElementById('feedbackSubmit');
+        var statusEl  = document.getElementById('feedbackStatus');
+        var starsEl   = document.getElementById('feedbackStars');
+        var ratingHint= document.getElementById('ratingHint');
+        var selectedRating = 0;
+
+        var ratingLabels = ['', 'Not useful', 'Slightly useful', 'Somewhat useful', 'Useful', 'Very useful'];
+
+        // Rating buttons
+        starsEl.addEventListener('click', function(e) {
+            var btn = e.target.closest('.star-btn');
+            if (!btn) return;
+            selectedRating = parseInt(btn.dataset.value);
+            starsEl.querySelectorAll('.star-btn').forEach(function(b) {
+                b.classList.toggle('selected', parseInt(b.dataset.value) <= selectedRating);
+            });
+            ratingHint.textContent = selectedRating + ' — ' + ratingLabels[selectedRating];
+        });
 
         fab.addEventListener('click', function() {
             var isOpen = popup.classList.toggle('open');
             fab.classList.toggle('active', isOpen);
-            if (isOpen) textarea.focus();
+            if (isOpen) setTimeout(function() { textarea.focus(); }, 50);
         });
 
         closeBtn.addEventListener('click', function() {
@@ -196,7 +229,11 @@
 
         submitBtn.addEventListener('click', function() {
             var msg = textarea.value.trim();
-            if (!msg) return;
+            if (!msg && !selectedRating) {
+                statusEl.textContent = 'Please add a rating or message.';
+                statusEl.className = 'feedback-status error';
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending…';
@@ -208,7 +245,9 @@
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    rating: selectedRating || '',
                     feedback: msg,
+                    email: emailEl.value.trim() || '',
                     page: location.href,
                     timestamp: new Date().toISOString()
                 })
@@ -216,7 +255,11 @@
                 statusEl.textContent = 'Thanks! Feedback sent.';
                 statusEl.classList.add('success');
                 textarea.value = '';
+                emailEl.value = '';
                 charEl.textContent = '0 / 1000';
+                selectedRating = 0;
+                starsEl.querySelectorAll('.star-btn').forEach(function(b) { b.classList.remove('selected'); });
+                ratingHint.textContent = 'Tap to rate';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send';
                 setTimeout(function() {
