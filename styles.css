@@ -119,6 +119,57 @@ body {
 }
 .stat-pill span { color: var(--gold); font-weight: 800; }
 
+/* ── Account Widget ────────────────────────────────────────────── */
+.account-widget {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border-mid);
+  border-radius: 24px;
+  padding: 5px 14px 5px 10px;
+}
+.account-rp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Beaufort for LOL', serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+.account-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border-mid);
+}
+.account-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 0.03em;
+}
+.account-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  color: #06080E;
+  font-family: 'Beaufort for LOL', serif;
+  font-weight: 900;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 600px) {
+  .account-widget { display: none; }
+}
+
 /* ── Hero ──────────────────────────────────────────────────────── */
 .hero {
   background: var(--bg);

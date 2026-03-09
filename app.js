@@ -19,7 +19,11 @@ const OWNED_KEY     = 'lolskins_owned';
 const STARTING_RP   = 15000;
 
 function getMockRP()  { return parseInt(localStorage.getItem(MOCK_RP_KEY) ?? STARTING_RP, 10); }
-function setMockRP(v) { localStorage.setItem(MOCK_RP_KEY, String(v)); }
+function setMockRP(v) {
+  localStorage.setItem(MOCK_RP_KEY, String(v));
+  const el = document.getElementById('headerRP');
+  if (el) el.textContent = v.toLocaleString();
+}
 function getOwned()   { try { return new Set(JSON.parse(localStorage.getItem(OWNED_KEY) || '[]')); } catch { return new Set(); } }
 function addOwned(id) { const o = getOwned(); o.add(String(id)); localStorage.setItem(OWNED_KEY, JSON.stringify([...o])); }
 
@@ -359,5 +363,6 @@ document.getElementById('purchaseClose').addEventListener('click', closePurchase
 purchaseOverlay.addEventListener('click', e => { if (e.target === purchaseOverlay) closePurchaseModal(); });
 
 // ── Init ─────────────────────────────────────────────────────────────────────
+document.getElementById('headerRP').textContent = getMockRP().toLocaleString();
 populateDropdowns();
 applyFilters();
