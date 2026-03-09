@@ -10,7 +10,6 @@ let activeTier = "all";
 let activeChampion = "all";
 let activeSkinLine = "all";
 let activeYear = "all";
-let activeAvail = "all";
 let sortBy = "newest";
 let searchQuery = "";
 
@@ -80,7 +79,6 @@ function applyFilters() {
     if (activeChampion !== "all" && s.champion !== activeChampion) return false;
     if (activeSkinLine !== "all" && s.skinLine !== activeSkinLine) return false;
     if (activeYear !== "all" && yearOf(s) !== activeYear) return false;
-    if (activeAvail !== "all" && s.availability !== activeAvail) return false;
     if (q && !s.name.toLowerCase().includes(q) && !s.champion.toLowerCase().includes(q) && !s.skinLine.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -214,11 +212,6 @@ document.getElementById("yearFilter").addEventListener("change", e => {
   if (activeYear !== "all") track("filter_year", { year: activeYear });
   applyFilters();
 });
-document.getElementById("availabilityFilter").addEventListener("change", e => {
-  activeAvail = e.target.value;
-  if (activeAvail !== "all") track("filter_availability", { availability: activeAvail });
-  applyFilters();
-});
 document.getElementById("sortBy").addEventListener("change", e => {
   sortBy = e.target.value;
   track("sort_change", { sort_by: sortBy });
@@ -252,7 +245,6 @@ document.getElementById("resetFilters").addEventListener("click", () => {
   document.getElementById("championFilter").value = "all";
   document.getElementById("skinLineFilter").value = "all";
   document.getElementById("yearFilter").value = "all";
-  document.getElementById("availabilityFilter").value = "all";
   document.getElementById("sortBy").value = "newest";
   track("reset_filters");
   applyFilters();
