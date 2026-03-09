@@ -41,7 +41,7 @@ function tierColor(tier) {
 
 function rpLabel(skin) {
   if (skin.rp === 0) return skin.availability === "Rare" ? "Gem / Prestige / Event" : "0 RP";
-  return `${skin.rp.toLocaleString()} RP`;
+  return `${(skin.rp ?? 0).toLocaleString()} RP`;
 }
 
 function imgUrl(skin) {
@@ -87,8 +87,8 @@ function applyFilters() {
 
   filtered.sort((a, b) => {
     switch (sortBy) {
-      case "newest":     return b.releaseDate.localeCompare(a.releaseDate);
-      case "oldest":     return a.releaseDate.localeCompare(b.releaseDate);
+      case "newest":     return (b.releaseDate || "0000").localeCompare(a.releaseDate || "0000");
+      case "oldest":     return (a.releaseDate || "0000").localeCompare(b.releaseDate || "0000");
       case "name-az":    return a.name.localeCompare(b.name);
       case "name-za":    return b.name.localeCompare(a.name);
       case "price-high": return b.rp - a.rp;
