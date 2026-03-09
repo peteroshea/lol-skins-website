@@ -551,6 +551,121 @@ select:focus { border-color: var(--gold); }
   .header-inner { padding: 0 16px; }
 }
 
+/* ── Top-up Modal ───────────────────────────────────────────────────────────── */
+.topup-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  z-index: 10001;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.topup-overlay.open { opacity: 1; pointer-events: all; }
+
+.topup-modal {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--border-mid);
+  border-radius: 14px;
+  width: min(440px, 94vw);
+  padding: 32px 28px 28px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,168,75,0.1);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.topup-overlay.open .topup-modal { transform: translateY(0) scale(1); }
+
+.topup-close {
+  position: absolute; top: 14px; right: 16px;
+  background: rgba(0,0,0,0.3); border: none;
+  color: var(--text-mid); width: 28px; height: 28px;
+  border-radius: 50%; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+.topup-close:hover { color: var(--text-bright); background: rgba(255,255,255,0.1); }
+
+.topup-header {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Beaufort for LOL', serif;
+  font-size: 1.15rem; font-weight: 900;
+  color: var(--text-bright); letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.topup-sub {
+  font-size: 0.8rem; color: var(--text); margin-bottom: 22px;
+}
+
+.topup-options {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-bottom: 24px;
+}
+.topup-option {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 18px 10px 14px;
+  background: var(--bg4);
+  border: 1px solid var(--border-mid);
+  border-radius: 10px; cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+}
+.topup-option:hover {
+  border-color: var(--gold-dim); background: var(--bg5);
+  transform: translateY(-2px);
+}
+.topup-option.selected {
+  border-color: var(--gold);
+  background: rgba(200,168,75,0.08);
+  box-shadow: 0 0 0 1px var(--gold), 0 4px 16px rgba(200,168,75,0.15);
+}
+.topup-rp-badge {
+  background: var(--gold); color: #06080E;
+  font-family: 'Beaufort for LOL', serif; font-weight: 900;
+  font-size: 0.6rem; padding: 2px 6px; border-radius: 3px;
+  letter-spacing: 0.08em;
+}
+.topup-option.selected .topup-rp-badge {
+  background: var(--gold-light);
+}
+.topup-amount {
+  font-family: 'Beaufort for LOL', serif;
+  font-size: 1.4rem; font-weight: 900;
+  color: var(--text-bright); line-height: 1;
+}
+.topup-option.selected .topup-amount { color: var(--gold); }
+.topup-label {
+  font-size: 0.68rem; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+.topup-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.topup-current {
+  font-size: 0.78rem; color: var(--text-mid);
+}
+.topup-current strong { color: var(--gold); }
+
+.topup-btn {
+  padding: 10px 22px;
+  background: var(--gold); color: #06080E;
+  border: none; border-radius: 6px;
+  font-family: 'Beaufort for LOL', serif; font-weight: 900;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.18s, transform 0.15s, opacity 0.18s;
+  white-space: nowrap;
+}
+.topup-btn:hover:not(:disabled) { background: var(--gold-light); transform: scale(1.02); }
+.topup-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pm-topup-link {
+  background: none; border: none;
+  color: var(--gold); font-size: 0.72rem;
+  cursor: pointer; text-decoration: underline;
+  padding: 0; font-family: inherit;
+}
+.pm-topup-link:hover { color: var(--gold-light); }
+
 /* ── Buy Button (card) ──────────────────────────────────────────────────────── */
 .buy-btn {
   width: 100%;

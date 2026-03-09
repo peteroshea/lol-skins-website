@@ -283,6 +283,52 @@ modalClose.addEventListener("click", closeModal);
 overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
+// ── Top-up Modal ─────────────────────────────────────────────────────────────
+const topupOverlay = document.getElementById('topupOverlay');
+let selectedTopup = 0;
+
+function openTopupModal() {
+  selectedTopup = 0;
+  document.getElementById('topupCurrentRP').textContent = getMockRP().toLocaleString() + ' RP';
+  document.querySelectorAll('.topup-option').forEach(b => b.classList.remove('selected'));
+  const confirmBtn = document.getElementById('topupConfirm');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Select an amount';
+  topupOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTopupModal() {
+  topupOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('topupOptions').addEventListener('click', e => {
+  const btn = e.target.closest('.topup-option');
+  if (!btn) return;
+  document.querySelectorAll('.topup-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedTopup = parseInt(btn.dataset.amount, 10);
+  const confirmBtn = document.getElementById('topupConfirm');
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = `Add ${selectedTopup.toLocaleString()} RP`;
+});
+
+document.getElementById('topupConfirm').addEventListener('click', () => {
+  if (!selectedTopup) return;
+  const newRP = getMockRP() + selectedTopup;
+  setMockRP(newRP);
+  document.getElementById('topupCurrentRP').textContent = newRP.toLocaleString() + ' RP';
+  const confirmBtn = document.getElementById('topupConfirm');
+  confirmBtn.textContent = `✓ Added ${selectedTopup.toLocaleString()} RP!`;
+  confirmBtn.disabled = true;
+  setTimeout(closeTopupModal, 1400);
+});
+
+document.getElementById('topupClose').addEventListener('click', closeTopupModal);
+topupOverlay.addEventListener('click', e => { if (e.target === topupOverlay) closeTopupModal(); });
+document.getElementById('headerRPBtn').addEventListener('click', openTopupModal);
+
 // ── Purchase Modal ───────────────────────────────────────────────────────────
 function openPurchaseModal(skin) {
   const rp       = getMockRP();
@@ -297,7 +343,7 @@ function openPurchaseModal(skin) {
        </div>
        <div class="pm-balance${canAfford ? '' : ' low'}">
          Your balance: <strong>${rp.toLocaleString()} RP</strong>
-         ${!canAfford ? '<span class="pm-insufficient">Insufficient RP</span>' : ''}
+         ${!canAfford ? '<span class="pm-insufficient">Insufficient RP — <button class="pm-topup-link" id="pmTopupLink">Top Up</button></span>' : ''}
        </div>`;
 
   const actionsHtml = isFree
@@ -324,6 +370,8 @@ function openPurchaseModal(skin) {
   document.getElementById('pmCancel').addEventListener('click', closePurchaseModal);
   const confirmBtn = document.getElementById('pmConfirm');
   if (confirmBtn) confirmBtn.addEventListener('click', () => completePurchase(skin));
+  const topupLink = document.getElementById('pmTopupLink');
+  if (topupLink) topupLink.addEventListener('click', () => { closePurchaseModal(); openTopupModal(); });
 
   purchaseOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';

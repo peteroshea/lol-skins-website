@@ -34,12 +34,13 @@
                 </div>
             </div>
             <div class="account-widget">
-                <div class="account-rp">
+                <div class="account-rp" id="headerRPBtn" title="Top up RP" style="cursor:pointer;">
                     <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
                         <circle cx="8" cy="8" r="7" fill="#C8A84B" opacity="0.2" stroke="#C8A84B" stroke-width="1.2"/>
                         <text x="8" y="11.5" text-anchor="middle" font-size="7" font-weight="900" fill="#C8A84B" font-family="sans-serif">RP</text>
                     </svg>
                     <span id="headerRP">15,000</span>
+                    <svg viewBox="0 0 10 10" width="9" height="9" fill="none" style="opacity:0.5;margin-left:1px"><path d="M2 3.5L5 6.5L8 3.5" stroke="#C8A84B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
                 <div class="account-divider"></div>
                 <div class="account-name">
@@ -146,6 +147,42 @@
         <p>All data is publicly available, sourced from Riot's Data Dragon API, Community Dragon, and Meraki Analytics.</p>
         <p>League of Legends and all related assets are the property of Riot Games, Inc.</p>
     </footer>
+
+    <!-- Top-up Modal -->
+    <div class="topup-overlay" id="topupOverlay">
+        <div class="topup-modal" id="topupModal">
+            <button class="topup-close" id="topupClose">✕</button>
+            <div class="topup-header">
+                <svg viewBox="0 0 20 20" width="22" height="22" fill="none">
+                    <circle cx="10" cy="10" r="9" fill="#C8A84B" opacity="0.15" stroke="#C8A84B" stroke-width="1.4"/>
+                    <text x="10" y="14" text-anchor="middle" font-size="8.5" font-weight="900" fill="#C8A84B" font-family="sans-serif">RP</text>
+                </svg>
+                <span>Top Up RP</span>
+            </div>
+            <p class="topup-sub">Select an amount to add to your balance</p>
+            <div class="topup-options" id="topupOptions">
+                <button class="topup-option" data-amount="500">
+                    <span class="topup-rp-badge">RP</span>
+                    <span class="topup-amount">500</span>
+                    <span class="topup-label">Starter Pack</span>
+                </button>
+                <button class="topup-option" data-amount="1000">
+                    <span class="topup-rp-badge">RP</span>
+                    <span class="topup-amount">1,000</span>
+                    <span class="topup-label">Standard Pack</span>
+                </button>
+                <button class="topup-option" data-amount="5000">
+                    <span class="topup-rp-badge">RP</span>
+                    <span class="topup-amount">5,000</span>
+                    <span class="topup-label">Champion Pack</span>
+                </button>
+            </div>
+            <div class="topup-footer">
+                <div class="topup-current">Current balance: <strong id="topupCurrentRP">—</strong></div>
+                <button class="topup-btn" id="topupConfirm" disabled>Select an amount</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Purchase Modal -->
     <div class="purchase-overlay" id="purchaseOverlay">
