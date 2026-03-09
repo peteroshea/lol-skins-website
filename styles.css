@@ -789,6 +789,22 @@ select:focus { border-color: var(--gold); }
   cursor: pointer; transition: border-color 0.15s, color 0.15s;
 }
 .pm-btn-cancel:hover { border-color: var(--text-mid); color: var(--text-bright); }
+.pm-btn-topup {
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  border-radius: 6px;
+  font-family: 'Beaufort for LOL', serif; font-weight: 700;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.pm-btn-topup:hover {
+  border-color: var(--gold);
+  background: rgba(200,168,75,0.08);
+  color: var(--gold-light);
+}
 .pm-btn-confirm {
   flex: 1; padding: 10px 20px;
   background: var(--gold); color: #06080E; border: none; border-radius: 6px;

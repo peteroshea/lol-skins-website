@@ -349,6 +349,7 @@ function openPurchaseModal(skin) {
   const actionsHtml = isFree
     ? `<button class="pm-btn-cancel" id="pmCancel">Close</button>`
     : `<button class="pm-btn-cancel" id="pmCancel">Cancel</button>
+       <button class="pm-btn-topup" id="pmTopup">+ Top Up RP</button>
        <button class="pm-btn-confirm${canAfford ? '' : ' disabled'}" id="pmConfirm" ${canAfford ? '' : 'disabled'}>
          Confirm Purchase
        </button>`;
@@ -372,6 +373,8 @@ function openPurchaseModal(skin) {
   if (confirmBtn) confirmBtn.addEventListener('click', () => completePurchase(skin));
   const topupLink = document.getElementById('pmTopupLink');
   if (topupLink) topupLink.addEventListener('click', () => { closePurchaseModal(); openTopupModal(); });
+  const topupBtn = document.getElementById('pmTopup');
+  if (topupBtn) topupBtn.addEventListener('click', () => { closePurchaseModal(); openTopupModal(); });
 
   purchaseOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
