@@ -145,8 +145,10 @@ def main():
             else:
                 rp = TIER_RP[tier]
 
-            # Release date from Meraki
+            # Release date from Meraki (treat "0000-00-00" as unknown)
             release_date = meraki.get("release", "")
+            if release_date == "0000-00-00":
+                release_date = ""
 
             # Skin line
             sl_ids   = cd_skin.get("skinLines") or []
