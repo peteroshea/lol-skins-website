@@ -498,6 +498,177 @@ select:focus { border-color: var(--gold); }
   .header-inner { padding: 0 16px; }
 }
 
+/* ── Buy Button (card) ──────────────────────────────────────────────────────── */
+.buy-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--gold);
+  color: #06080E;
+  font-family: 'Beaufort for LOL', serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+  position: relative;
+  z-index: 4;
+}
+.buy-btn:hover {
+  background: var(--gold-light);
+  transform: scale(1.03);
+}
+.buy-btn.owned {
+  background: transparent;
+  border: 1px solid var(--standard);
+  color: var(--standard);
+  cursor: default;
+}
+.buy-btn.owned:hover { transform: none; background: transparent; }
+
+/* ── Purchase Modal ─────────────────────────────────────────────────────────── */
+.purchase-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+.purchase-overlay.open {
+  opacity: 1; pointer-events: all;
+}
+.purchase-modal {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--border-mid);
+  border-radius: 14px;
+  width: min(760px, 95vw);
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,168,75,0.12);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.purchase-overlay.open .purchase-modal {
+  transform: translateY(0) scale(1);
+}
+.purchase-close {
+  position: absolute; top: 14px; right: 16px; z-index: 5;
+  background: rgba(0,0,0,0.4); border: none;
+  color: var(--text-mid); width: 30px; height: 30px;
+  border-radius: 50%; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+.purchase-close:hover { color: var(--text-bright); background: rgba(255,255,255,0.1); }
+.purchase-body { display: flex; min-height: 320px; }
+
+.pm-splash {
+  position: relative;
+  width: 48%; flex-shrink: 0;
+  overflow: hidden;
+}
+.pm-splash img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pm-splash-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, transparent 60%, var(--bg2) 100%);
+}
+.pm-info {
+  flex: 1;
+  padding: 36px 32px 32px 28px;
+  display: flex; flex-direction: column; gap: 10px;
+  justify-content: center;
+}
+.pm-champion {
+  font-size: 0.72rem; color: var(--text);
+  text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600;
+}
+.pm-name {
+  font-family: 'Beaufort for LOL', serif;
+  font-size: 1.6rem; font-weight: 900;
+  color: var(--text-bright); line-height: 1.15; margin-bottom: 4px;
+}
+.pm-price-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.pm-rp-badge {
+  background: var(--gold); color: #06080E;
+  font-family: 'Beaufort for LOL', serif; font-weight: 900;
+  font-size: 0.7rem; padding: 3px 7px; border-radius: 4px; letter-spacing: 0.08em;
+}
+.pm-rp-amount {
+  font-family: 'Beaufort for LOL', serif;
+  font-size: 1.8rem; font-weight: 900; color: var(--gold); line-height: 1;
+}
+.pm-balance { font-size: 0.8rem; color: var(--text-mid); }
+.pm-balance strong { color: var(--text-bright); }
+.pm-balance.low strong { color: var(--rare); }
+.pm-insufficient {
+  display: inline-block; margin-left: 8px;
+  font-size: 0.72rem; color: var(--rare); font-weight: 600;
+}
+.pm-price-note { font-size: 0.8rem; color: var(--text); font-style: italic; margin-top: 6px; }
+.pm-actions { display: flex; gap: 10px; margin-top: 12px; }
+.pm-btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid var(--border-mid); background: transparent;
+  color: var(--text-mid); border-radius: 6px;
+  font-family: 'Beaufort for LOL', serif; font-weight: 700;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: border-color 0.15s, color 0.15s;
+}
+.pm-btn-cancel:hover { border-color: var(--text-mid); color: var(--text-bright); }
+.pm-btn-confirm {
+  flex: 1; padding: 10px 20px;
+  background: var(--gold); color: #06080E; border: none; border-radius: 6px;
+  font-family: 'Beaufort for LOL', serif; font-weight: 900;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.18s, transform 0.15s;
+}
+.pm-btn-confirm:hover { background: var(--gold-light); transform: scale(1.02); }
+.pm-btn-confirm.disabled { opacity: 0.4; cursor: not-allowed; }
+.pm-btn-confirm.disabled:hover { background: var(--gold); transform: none; }
+
+.pm-success {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 60px 40px; text-align: center;
+  animation: pm-fade-in 0.35s ease;
+}
+@keyframes pm-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pm-success-check {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(0,200,122,0.12); border: 2px solid var(--standard);
+  color: var(--standard); font-size: 28px;
+  display: flex; align-items: center; justify-content: center;
+  animation: pm-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pm-pop {
+  from { transform: scale(0.3); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.pm-success-title {
+  font-family: 'Beaufort for LOL', serif;
+  font-size: 1.4rem; font-weight: 900; color: var(--text-bright);
+}
+.pm-success-skin { font-size: 0.9rem; color: var(--text-mid); }
+.pm-success-balance { font-size: 0.82rem; color: var(--text); margin-top: 4px; }
+.pm-success-balance strong { color: var(--gold); }
+
+@media (max-width: 560px) {
+  .purchase-body { flex-direction: column; }
+  .pm-splash { width: 100%; height: 180px; }
+  .pm-splash-overlay { background: linear-gradient(to bottom, transparent 50%, var(--bg2) 100%); }
+  .pm-info { padding: 20px; }
+  .pm-name { font-size: 1.2rem; }
+}
+
 /* ── Feedback Widget ────────────────────────────────────────────── */
 .feedback-fab {
   position: fixed;

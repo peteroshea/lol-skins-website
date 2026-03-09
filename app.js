@@ -13,7 +13,19 @@ let activeYear = "all";
 let sortBy = "newest";
 let searchQuery = "";
 
+// ── Store state ──────────────────────────────────────────────────────────────
+const MOCK_RP_KEY   = 'lolskins_rp';
+const OWNED_KEY     = 'lolskins_owned';
+const STARTING_RP   = 15000;
+
+function getMockRP()  { return parseInt(localStorage.getItem(MOCK_RP_KEY) ?? STARTING_RP, 10); }
+function setMockRP(v) { localStorage.setItem(MOCK_RP_KEY, String(v)); }
+function getOwned()   { try { return new Set(JSON.parse(localStorage.getItem(OWNED_KEY) || '[]')); } catch { return new Set(); } }
+function addOwned(id) { const o = getOwned(); o.add(String(id)); localStorage.setItem(OWNED_KEY, JSON.stringify([...o])); }
+
 // ── DOM refs ─────────────────────────────────────────────────────────────────
+const purchaseOverlay = document.getElementById("purchaseOverlay");
+const purchaseBody    = document.getElementById("purchaseBody");
 const grid         = document.getElementById("skinsGrid");
 const loadMoreWrap = document.getElementById("loadMore");
 const loadMoreBtn  = document.getElementById("loadMoreBtn");
@@ -106,10 +118,14 @@ function applyFilters() {
 // ── Render ───────────────────────────────────────────────────────────────────
 function renderPage() {
   const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const owned = getOwned();
   slice.forEach(skin => {
     const card = document.createElement("div");
     card.className = `skin-card tier-card-${skin.tier}`;
     card.dataset.id = skin.id;
+    const isOwned   = owned.has(String(skin.id));
+    const isFree    = skin.rp === 0;
+    const buyLabel  = isOwned ? '✓ Owned' : isFree ? 'Acquire' : `Buy · ${skin.rp.toLocaleString()} RP`;
     card.innerHTML = `
       <img class="card-image" src="${imgUrl(skin)}" alt="${skin.name}" loading="lazy"
            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -122,8 +138,13 @@ function renderPage() {
             <span class="card-rp">${rpLabel(skin)}</span>
             <span class="card-avail avail-${skin.availability}">${skin.availability}</span>
           </div>
+          <button class="buy-btn${isOwned ? ' owned' : ''}" data-skin-id="${skin.id}">${buyLabel}</button>
         </div>
       </div>`;
+    card.querySelector('.buy-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      if (!isOwned) openPurchaseModal(skin);
+    });
     card.addEventListener("click", () => openModal(skin));
     grid.appendChild(card);
   });
@@ -257,6 +278,85 @@ loadMoreBtn.addEventListener("click", () => {
 modalClose.addEventListener("click", closeModal);
 overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+// ── Purchase Modal ───────────────────────────────────────────────────────────
+function openPurchaseModal(skin) {
+  const rp       = getMockRP();
+  const isFree   = skin.rp === 0;
+  const canAfford = rp >= skin.rp;
+
+  const priceHtml = isFree
+    ? `<div class="pm-price-note">This skin cannot be directly purchased</div>`
+    : `<div class="pm-price-row">
+         <span class="pm-rp-badge">RP</span>
+         <span class="pm-rp-amount">${skin.rp.toLocaleString()}</span>
+       </div>
+       <div class="pm-balance${canAfford ? '' : ' low'}">
+         Your balance: <strong>${rp.toLocaleString()} RP</strong>
+         ${!canAfford ? '<span class="pm-insufficient">Insufficient RP</span>' : ''}
+       </div>`;
+
+  const actionsHtml = isFree
+    ? `<button class="pm-btn-cancel" id="pmCancel">Close</button>`
+    : `<button class="pm-btn-cancel" id="pmCancel">Cancel</button>
+       <button class="pm-btn-confirm${canAfford ? '' : ' disabled'}" id="pmConfirm" ${canAfford ? '' : 'disabled'}>
+         Confirm Purchase
+       </button>`;
+
+  purchaseBody.innerHTML = `
+    <div class="pm-splash">
+      <img src="${imgUrl(skin)}" alt="${skin.name}"
+           onerror="this.style.display='none'">
+      <div class="pm-splash-overlay"></div>
+    </div>
+    <div class="pm-info">
+      <div class="pm-champion">${skin.champion}</div>
+      <div class="pm-name">${skin.name}</div>
+      <span class="tier-badge tier-${skin.tier}">${skin.tier}</span>
+      ${priceHtml}
+      <div class="pm-actions">${actionsHtml}</div>
+    </div>`;
+
+  document.getElementById('pmCancel').addEventListener('click', closePurchaseModal);
+  const confirmBtn = document.getElementById('pmConfirm');
+  if (confirmBtn) confirmBtn.addEventListener('click', () => completePurchase(skin));
+
+  purchaseOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  track('purchase_modal_open', { skin_name: skin.name, tier: skin.tier });
+}
+
+function completePurchase(skin) {
+  const newRP = getMockRP() - skin.rp;
+  setMockRP(newRP);
+  addOwned(skin.id);
+
+  purchaseBody.innerHTML = `
+    <div class="pm-success">
+      <div class="pm-success-check">✓</div>
+      <div class="pm-success-title">Purchase Complete!</div>
+      <div class="pm-success-skin">${skin.name}</div>
+      <div class="pm-success-balance">New balance: <strong>${newRP.toLocaleString()} RP</strong></div>
+    </div>`;
+
+  // Update card button in grid
+  const cardBtn = grid.querySelector(`[data-skin-id="${skin.id}"]`);
+  if (cardBtn) {
+    cardBtn.textContent = '✓ Owned';
+    cardBtn.classList.add('owned');
+  }
+
+  track('purchase_complete', { skin_name: skin.name, tier: skin.tier, rp_spent: skin.rp });
+  setTimeout(closePurchaseModal, 2200);
+}
+
+function closePurchaseModal() {
+  purchaseOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('purchaseClose').addEventListener('click', closePurchaseModal);
+purchaseOverlay.addEventListener('click', e => { if (e.target === purchaseOverlay) closePurchaseModal(); });
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 populateDropdowns();
