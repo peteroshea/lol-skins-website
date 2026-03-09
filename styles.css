@@ -497,3 +497,154 @@ select:focus { border-color: var(--gold); }
   .filters-section { padding: 16px 16px 0; }
   .header-inner { padding: 0 16px; }
 }
+
+/* ── Feedback Widget ────────────────────────────────────────────── */
+.feedback-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(200, 168, 75, 0.5), 0 0 0 3px rgba(200,168,75,0.2);
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+  transform: translateZ(0);
+}
+.feedback-fab:hover,
+.feedback-fab.active {
+  background: var(--gold-light);
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(200, 168, 75, 0.6);
+}
+
+.feedback-popup {
+  position: fixed;
+  bottom: 90px;
+  right: 28px;
+  z-index: 999;
+  width: 320px;
+  background: var(--bg3);
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.feedback-popup.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.feedback-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Beaufort for LOL', serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.feedback-close {
+  background: none;
+  border: none;
+  color: var(--text-mid);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.feedback-close:hover { color: var(--text-bright); }
+
+.feedback-popup-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.feedback-hint {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  line-height: 1.4;
+}
+.feedback-popup-body textarea {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  color: var(--text-bright);
+  font-family: 'Spiegel', sans-serif;
+  font-size: 0.82rem;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 80px;
+}
+.feedback-popup-body textarea:focus {
+  border-color: var(--gold-dim);
+}
+.feedback-popup-body textarea::placeholder {
+  color: var(--text);
+}
+.feedback-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.feedback-char {
+  font-size: 0.72rem;
+  color: var(--text);
+}
+.feedback-submit {
+  background: var(--gold);
+  color: #06080E;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 20px;
+  font-family: 'Beaufort for LOL', serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.feedback-submit:hover:not(:disabled) {
+  background: var(--gold-light);
+  transform: scale(1.03);
+}
+.feedback-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.feedback-status {
+  font-size: 0.76rem;
+  min-height: 1em;
+  text-align: center;
+}
+.feedback-status.success { color: #00C87A; }
+.feedback-status.error   { color: var(--rare); }
+
+@media (max-width: 400px) {
+  .feedback-popup { right: 12px; left: 12px; width: auto; }
+  .feedback-fab   { right: 16px; bottom: 16px; }
+}

@@ -141,7 +141,98 @@
         <p>League of Legends and all related assets are the property of Riot Games, Inc.</p>
     </footer>
 
+    <!-- Feedback Widget -->
+    <button class="feedback-fab" id="feedbackFab" aria-label="Send feedback">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+    </button>
+
+    <div class="feedback-popup" id="feedbackPopup" role="dialog" aria-modal="true" aria-label="Feedback">
+        <div class="feedback-popup-header">
+            <span>Send Feedback</span>
+            <button class="feedback-close" id="feedbackClose" aria-label="Close">✕</button>
+        </div>
+        <div class="feedback-popup-body">
+            <p class="feedback-hint">Found a bug, missing skin, or have a suggestion? Let me know!</p>
+            <textarea id="feedbackText" placeholder="Your feedback..." rows="4" maxlength="1000"></textarea>
+            <div class="feedback-footer">
+                <span class="feedback-char" id="feedbackChar">0 / 1000</span>
+                <button class="feedback-submit" id="feedbackSubmit">Send</button>
+            </div>
+            <p class="feedback-status" id="feedbackStatus"></p>
+        </div>
+    </div>
+
     <script src="skins-data.js"></script>
     <script src="app.js"></script>
+    <script>
+    (function() {
+        // ── Replace this with your deployed Google Apps Script URL ──
+        var SHEET_URL = 'https://script.google.com/macros/s/AKfycbytdXq5wTtxsSPsN1dePxynmguMz9RawEN45NwYBpccgNoj8dYKOcypDRqct8S8U1n8/exec';
+
+        var fab     = document.getElementById('feedbackFab');
+        var popup   = document.getElementById('feedbackPopup');
+        var closeBtn= document.getElementById('feedbackClose');
+        var textarea= document.getElementById('feedbackText');
+        var charEl  = document.getElementById('feedbackChar');
+        var submitBtn=document.getElementById('feedbackSubmit');
+        var statusEl= document.getElementById('feedbackStatus');
+
+        fab.addEventListener('click', function() {
+            var isOpen = popup.classList.toggle('open');
+            fab.classList.toggle('active', isOpen);
+            if (isOpen) textarea.focus();
+        });
+
+        closeBtn.addEventListener('click', function() {
+            popup.classList.remove('open');
+            fab.classList.remove('active');
+        });
+
+        textarea.addEventListener('input', function() {
+            charEl.textContent = textarea.value.length + ' / 1000';
+        });
+
+        submitBtn.addEventListener('click', function() {
+            var msg = textarea.value.trim();
+            if (!msg) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending…';
+            statusEl.textContent = '';
+            statusEl.className = 'feedback-status';
+
+            fetch(SHEET_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    feedback: msg,
+                    page: location.href,
+                    timestamp: new Date().toISOString()
+                })
+            }).then(function() {
+                statusEl.textContent = 'Thanks! Feedback sent.';
+                statusEl.classList.add('success');
+                textarea.value = '';
+                charEl.textContent = '0 / 1000';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send';
+                setTimeout(function() {
+                    popup.classList.remove('open');
+                    fab.classList.remove('active');
+                    statusEl.textContent = '';
+                    statusEl.className = 'feedback-status';
+                }, 2000);
+            }).catch(function() {
+                statusEl.textContent = 'Something went wrong. Try again.';
+                statusEl.classList.add('error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send';
+            });
+        });
+    })();
+    </script>
 </body>
 </html>
