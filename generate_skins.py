@@ -36,12 +36,14 @@ MERAKI_URL  = "https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/c
 
 # ── Tier / RP mappings ────────────────────────────────────────────────────────
 RARITY_TIER = {
-    "kUltimate":  "Ultimate",
-    "kMythic":    "Mythic",
-    "kLegendary": "Legendary",
-    "kEpic":      "Epic",
-    "kRare":      "Rare",
-    "kNoRarity":  "Standard",   # refined to Budget below for old cheap skins
+    "kUltimate":     "Ultimate",
+    "kMythic":       "Mythic",
+    "kLegendary":    "Legendary",
+    "kEpic":         "Epic",
+    "kRare":         "Rare",
+    "kExalted":      "Exalted",
+    "kTranscendent": "Exalted",  # Risen Legend skins — same display tier
+    "kNoRarity":     "Standard", # refined to Budget below for old cheap skins
 }
 TIER_RP = {
     "Ultimate":  3250,
@@ -51,6 +53,7 @@ TIER_RP = {
     "Standard":  975,
     "Budget":    520,
     "Rare":      0,
+    "Exalted":   0,
 }
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
